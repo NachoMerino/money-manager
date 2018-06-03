@@ -1,0 +1,19 @@
+{
+  "name": "node-react-boilerplate",
+  "version": "1.0.0",
+  "scripts": {
+    "client": "cd client && yarn start",
+    "server": "nodemon index.js",
+    "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
+  },
+  "dependencies": {
+    "cors": "^2.8.4",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.2",
+    "moment": "^2.22.2",
+    "mongoose": "^5.0.11"
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.0"
+  }
+}
