@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const moment = require('moment');
 const Schema = mongoose.Schema;
 
-const balanceSchema = new Schema({
+const accountSchema = new Schema({
   name: {
     type: String,
     required: true
@@ -19,5 +19,5 @@ const balanceSchema = new Schema({
   movements: Schema.Types.Mixed
 });
 
-const Balance = mongoose.model('balance', balanceSchema);
-module.exports = Balance;
+const Account = mongoose.model('accounts', accountSchema);
+module.exports = Account;

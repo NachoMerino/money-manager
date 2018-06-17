@@ -7,7 +7,12 @@ const cors = require('cors');
 const port = process.env.PORT || 5000;
 
 // Connection to DB using .env File
-mongoose.connect(process.env.DB_URI);
+// mongoose.connect(process.env.DB_URI);
+
+// Connection to the LOCAL database
+const dbConfig = require('./server/DBconfig/database.config.js');
+mongoose.connect(dbConfig.url);
+// common for both connections
 const db = mongoose.connection;
 
 db.once("open", () => {
@@ -25,15 +30,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 //DB model
 
-const balance = require('./server/controllers/balance.controller.js');
+const account = require('./server/controllers/account.controller.js');
 
-// Get all balances
-app.get('/balances', balance.findAll);
+// Get all accounts
+app.get('/accounts', account.findAll);
 
-// Create a new balance
-app.post('/newbalance', balance.create);
+// Create a new account
+app.post('/newaccount', account.create);
 
-// Updating balance
-app.put('/balance/:balanceId', balance.update);
+// Updating account
+app.put('/account/:accountId', account.update);
+
+// Updating with offline data
+app.put('/offlineupdate', account.offlineupdate);
+
+// Delete account
+app.delete('/deleteaccount/:accountId', account.delete);
+
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

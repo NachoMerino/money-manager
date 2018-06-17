@@ -135,7 +135,7 @@ class CustomDisplayMovements extends React.Component {
     if(props.movements === null){
       return null
     } else {
-      return{data:props.movements}
+      return{data:props.movements[props.year][props.month]}
     }
   }
 
@@ -145,25 +145,24 @@ class CustomDisplayMovements extends React.Component {
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
     return (
+      <React.Fragment>
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
             <TableBody>
-              <TableRow className={classes.infoRow}>
-                <TableCell className={classes.infoRowLeft}>Description</TableCell>
+              <TableRow>
+                <TableCell className={classes.infoRowLeft}>Categorie</TableCell>                
                 <TableCell className={classes.infoRowRight}>Amount</TableCell>
                 <TableCell className={classes.infoRowRight}>Date</TableCell>
-                <TableCell className={classes.infoRowRight}>Categorie</TableCell>
+                <TableCell className={classes.infoRowRight}>Description</TableCell>
               </TableRow>
               {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((n, i) => {
                 return (
                   <TableRow key={i}>
-                    <TableCell component="th" scope="row">
-                      {n.description}
-                    </TableCell>
-                    <TableCell numeric>{n.amount} €</TableCell>
-                    <TableCell numeric>{n.date}</TableCell>
-                    <TableCell numeric>{n.categorie}</TableCell>
+                    <TableCell>{n.categorie}</TableCell>
+                    <TableCell>{n.amount} €</TableCell>
+                    <TableCell>{n.date}</TableCell>
+                    <TableCell>{n.description}</TableCell>
                   </TableRow>
                 );
               })}
@@ -190,6 +189,7 @@ class CustomDisplayMovements extends React.Component {
           </Table>
         </div>
       </Paper>
+      </React.Fragment>
     );
   }
 }

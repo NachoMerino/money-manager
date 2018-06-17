@@ -4,9 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 import {Button, Dialog, InputLabel, Typography, FormControl, Input} from '@material-ui/core';
 import {AppBar, Toolbar, IconButton, InputAdornment, Slide, TextField} from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import moment from 'moment'
-import 'moment/locale/en-gb'  // without this line it didn't work
-moment.locale('en-gb');
 
 const styles = {
   appBar: {
@@ -25,11 +22,11 @@ function Transition(props) {
   return <Slide direction="up" {...props} />;
 }
 
-class createNewBalance extends Component {
+class createNewAccount extends Component {
   constructor(props){
     super()
     this.state= {
-      open: props.openCreateBalance,
+      open: props.openCreateAccount,
       name: '',
       balance: '',
       movements:[]
@@ -39,7 +36,7 @@ class createNewBalance extends Component {
   handleChange = name => event => {this.setState({[name]: event.target.value})}
 
   static getDerivedStateFromProps(props, state){
-    return {open: props.openCreateBalance}
+    return {open: props.openCreateAccount}
   }
 
   render(){
@@ -51,18 +48,18 @@ class createNewBalance extends Component {
         <Dialog
           fullScreen
           open={this.state.open}
-          onClose={()=>{this.props.handleCloseCreateBalance('noData')}}
+          onClose={()=>{this.props.handleCloseCreateAccount('noData')}}
           TransitionComponent={Transition}
         >
           <AppBar className={classes.appBar}>
             <Toolbar>
-              <IconButton color="inherit" onClick={()=>{this.props.handleCloseCreateBalance('noData')}} aria-label="Close">
+              <IconButton color="inherit" onClick={()=>{this.props.handleCloseCreateAccount('noData')}} aria-label="Close">
                 <CloseIcon />
               </IconButton>
               <Typography variant="title" color="inherit" className={classes.flex}>
-                New Balance
+                New Account
               </Typography>
-              <Button disabled={disabled} color="inherit" onClick={()=>{this.props.handleCloseCreateBalance(this.state)}}>
+              <Button disabled={disabled} color="inherit" onClick={()=>{this.props.handleCloseCreateAccount(this.state)}}>
                 save
               </Button>
             </Toolbar>
@@ -72,13 +69,13 @@ class createNewBalance extends Component {
             onChange={this.handleChange('name')}
             type='text'
             id="with-placeholder"
-            label="Balance Name"
-            placeholder="Set current Balance Name"
+            label="Account Name"
+            placeholder="Set current account Name"
             className={classes.margin}
             margin="normal"
           />
           <FormControl fullWidth className={classes.margin}>
-            <InputLabel htmlFor="adornment-balance">Current Balance</InputLabel>
+            <InputLabel htmlFor="adornment-balance">Current balance</InputLabel>
             <Input
               id="adornment-balance"
               type='number'
@@ -93,8 +90,8 @@ class createNewBalance extends Component {
   }
 }
 
-createNewBalance.propTypes = {
+createNewAccount.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(createNewBalance);
+export default withStyles(styles)(createNewAccount);

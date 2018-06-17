@@ -1,5 +1,5 @@
 import React from 'react';
-import { crudAPI } from '../../helpers';
+import { crudAPI, getMonthYear } from '../../helpers';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { Input, InputLabel, InputAdornment, FormControl, TextField, Button, Select} from '@material-ui/core';
@@ -31,11 +31,11 @@ class AddAmount extends React.Component {
     description:'',
     categorie:'Other',
     date:moment().format('L'),
-    balanceId:undefined,
+    accountId:undefined,
   } 
 
   static getDerivedStateFromProps(props, state){
-    return {balanceId: props.balanceId, balance:props.balance}
+    return {accountId: props.accountId, balance:props.balance}
   }  
 
   handleChange = name => event => {
@@ -50,26 +50,52 @@ class AddAmount extends React.Component {
 
   submitAmount = e => {
     e.preventDefault();
-    const changingBalance = this.state.balance + this.state.amount
+    const changingbalance = parseFloat(this.state.balance) + this.state.amount
     delete this.state.balance
-    const toSubmit = {...this.state, balance:changingBalance.toFixed(2)}
-    crudAPI('PUT',`/balance/${this.state.balanceId}`,toSubmit)
+    let toSubmit = {...this.state, balance:changingbalance.toFixed(2)}
+    crudAPI('PUT',`/account/${this.state.accountId}`,toSubmit)
       .then(res => {
         if(res.message){
           this.props.openSnackBar(res.message)
+          this.props.reRenderApp(this.state.accountId)
         } else {
           this.props.openSnackBar(res.error)
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        const accounts = JSON.parse(localStorage.getItem('accounts'))
+        if(accounts){
+          this.props.activateOfflineMode()
+          let selectedAccount
+          accounts.map((account,index) => (account._id === this.state.accountId) ? (selectedAccount = {account, index}) : null)
+          const date = getMonthYear(toSubmit.date)
+          selectedAccount.account.balance = toSubmit.balance 
+          delete toSubmit.accountId
+          delete toSubmit.balance
+          if(selectedAccount.account.movements[date.year]){  
+            if(selectedAccount.account.movements[date.year][date.month]){
+              selectedAccount.account.movements[date.year][date.month] = [...selectedAccount.account.movements[date.year][date.month], toSubmit]
+              } else {
+                selectedAccount.account.movements[date.year][date.month] = [toSubmit]
+              }
+            } else {
+              selectedAccount.account.movements[date.year] = {[date.month]:[toSubmit]}
+            }
+          localStorage.setItem('accounts', JSON.stringify(accounts));
+          this.props.reRenderApp(this.state.accountId)
+          this.props.openSnackBar('Movement has been added successfully')
+        } else {
+          this.props.openSnackBar('No database Founded, check your network conection')
+        }
+
+      });
+    this.setState({amount:'',categorie:'Other',date:moment().format('L'),description:''})
   }
 
 render(){
   const { classes } = this.props;
   const {amount, description} = this.state
-  let disabled = true
-  !amount.length && description.length > 0 ? (disabled = false) : (disabled = true)
-  const categories = ['Other','Food','Rent','Insurance','Clothes','Car','Eating Outside']
+  const categories = ['Other','Food','Rent','Insurance','Clothes','Car','Work','Eating Outside']
   return(
     <React.Fragment>
     <form noValidate onSubmit={this.submitAmount}>
@@ -98,6 +124,7 @@ render(){
     </FormControl>
     <TextField
       fullWidth
+      value={description}
       onChange={this.handleChange('description')}
       type='text'
       id="with-placeholder"
@@ -110,14 +137,14 @@ render(){
       fullWidth
       onChange={this.handleChange('date')}
       id="date"
-      label="Date"
+      label='Date'
       type="date"
       className={classes.margin}
       InputLabelProps={{
         shrink: true,
       }}
     />
-    <Button disabled={disabled} type='submit' variant="raised" className={classes.margin}>
+    <Button disabled={amount.length === undefined ? false : true} type='submit' variant="raised" className={classes.margin}>
       Submit Amount
     </Button>
     {this.state.balance ? <h1>Balance: {this.state.balance} €</h1> : null}

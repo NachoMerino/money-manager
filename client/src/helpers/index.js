@@ -16,3 +16,10 @@ export const crudAPI = async (method, endPoint, data) => {
   if (response.status !== 200) throw Error(body.message);
   return body;      
 }
+
+export const getMonthYear = date => {
+  const splitDate = date.split('/')
+  const year = splitDate[2]
+  const month = splitDate[1]
+  return {year, month} 
+}
